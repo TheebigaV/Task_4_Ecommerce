@@ -472,12 +472,12 @@ export default function Home() {
       />
 
       {/* ── Hero ── */}
-      <section id="home" className="section home-hero" style={{ minHeight: '90vh', display: 'flex', alignItems: 'center', background: 'var(--gradient-hero)', position: 'relative', overflow: 'hidden' }}>
+      <section id="home" className="section home-hero" style={{ minHeight: '90vh', display: 'flex', alignItems: 'flex-start', background: 'var(--gradient-hero)', position: 'relative', overflow: 'hidden' }}>
         <div className="glow-blob" style={{ width: 600, height: 600, background: 'rgba(99,102,241,0.15)', top: '-10%', left: '-10%' }} />
         <div className="glow-blob" style={{ width: 500, height: 500, background: 'rgba(167,139,250,0.1)', bottom: '0', right: '-10%' }} />
 
         <div className="container home-hero-container" style={{ position: 'relative', zIndex: 10 }}>
-          <div className="home-hero-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '2.5rem', alignItems: 'center' }}>
+          <div className="home-hero-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(360px, 480px) minmax(520px, 760px)', gap: '2rem', alignItems: 'flex-start' }}>
 
             {/* Text Content (Left) */}
             <div className="home-hero-text" style={{ textAlign: 'left' }}>
@@ -485,7 +485,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)', padding: '0.4rem 1rem', borderRadius: 50, marginBottom: '1.5rem' }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)', padding: '0.4rem 1rem', borderRadius: 50, marginBottom: '1rem' }}
               >
                 <span role="img" aria-label="rocket">🚀</span>
                 <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#a78bfa' }}>Next-Gen Digital Solutions</span>
@@ -495,16 +495,17 @@ export default function Home() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                style={{ lineHeight: 1.1, marginBottom: '1.5rem', letterSpacing: '-0.02em' }}
+                style={{ lineHeight: 1.05, marginBottom: '1.2rem', letterSpacing: '-0.02em' }}
               >
-                Power Your Business with <span className="gradient-text">Simple</span>
+                <span className="hero-title-line">Power Your Business</span>
+                <span className="hero-title-line">with <span className="gradient-text">Simple</span></span>
               </motion.h1>
 
               <motion.p className="home-hero-sub"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                style={{ color: '#94a3b8', marginBottom: '2.5rem', lineHeight: 1.7 }}
+                style={{ color: '#94a3b8', marginBottom: '1.8rem', lineHeight: 1.7 }}
               >
                 From professional marketing websites to seamless e-commerce flows — we deliver high-conversion, pixel-perfect digital experiences.
               </motion.p>
