@@ -518,12 +518,6 @@ export default function Home() {
                 <a href="#pricing" className="btn btn-primary" style={{ fontSize: '1rem', padding: '0.9rem 2rem' }}>
                   Get Started <ArrowRight size={18} />
                 </a>
-                <a href="#how-it-works" className="btn btn-secondary" style={{ fontSize: '1rem', padding: '0.9rem 2rem' }}>
-                  How It Works
-                </a>
-                <a href="#how-it-works" className="btn btn-secondary" style={{ fontSize: '1rem', padding: '0.9rem 2rem' }}>
-                  How It Works
-                </a>
               </motion.div>
             </div>
 

@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CreditCard, Lock, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AnimatedSection from '../components/AnimatedSection';
+import { API_BASE_URL } from '../config';
+import { auth } from '../firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 export default function Checkout() {
   const location = useLocation();
@@ -17,8 +20,13 @@ export default function Checkout() {
     address: '',
     city: '',
     zip: '',
+    country: 'Sri Lanka',
+    password: ''
   });
+
+  const [createAccount, setCreateAccount] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,17 +36,98 @@ export default function Checkout() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setProcessing(true);
+    setErrorMsg('');
 
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    try {
+      // 1. Send data to backend to create order and get PayHere hash
+      const response = await fetch(`${API_BASE_URL}/create_order.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: `${form.firstName} ${form.lastName}`,
+          email: form.email,
+          address: form.address,
+          city: form.city,
+          country: form.country,
+          plan_name: plan,
+          amount: price,
+          currency: 'LKR'
+        }),
+      });
 
-    navigate('/thank-you', {
-      state: {
-        orderId: `ORD-${Math.random().toString(36).slice(2, 10).toUpperCase()}`,
-        plan,
-        price,
-        billing,
-      },
-    });
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to create order on server.');
+      }
+
+      // 2. Setup PayHere object
+      const payment = {
+        sandbox: true,
+        merchant_id: data.merchant_id,
+        return_url: `${window.location.origin}/thank-you`,
+        cancel_url: `${window.location.origin}/checkout`,
+        notify_url: `${API_BASE_URL}/payhere_notify.php`,
+        order_id: data.order_id,
+        items: `${plan} Plan (${billing})`,
+        amount: data.amount,
+        currency: data.currency,
+        hash: data.hash,
+        first_name: form.firstName,
+        last_name: form.lastName,
+        email: form.email,
+        phone: form.phone,
+        address: form.address,
+        city: form.city,
+        country: form.country,
+      };
+
+      // 3. Build and submit form directly to PayHere sandbox
+      const payHereForm = document.createElement('form');
+      payHereForm.method = 'POST';
+      payHereForm.action = 'https://sandbox.payhere.lk/pay/checkout';
+
+      const fields = {
+        sandbox: 'true',
+        merchant_id: data.merchant_id,
+        return_url: `${window.location.origin}/thank-you`,
+        cancel_url: `${window.location.origin}/checkout`,
+        notify_url: `${API_BASE_URL}/payhere_notify.php`,
+        order_id: data.order_id,
+        items: `${plan} Plan (${billing})`,
+        amount: data.amount,
+        currency: data.currency,
+        hash: data.hash,
+        first_name: form.firstName,
+        last_name: form.lastName,
+        email: form.email,
+        phone: form.phone,
+        address: form.address,
+        city: form.city,
+        country: form.country,
+      };
+
+      // If creating account, save intention to sessionStorage to handle after redirect
+      if (createAccount && form.password) {
+        sessionStorage.setItem('pendingAccount', JSON.stringify({ email: form.email, password: form.password }));
+      }
+
+      Object.entries(fields).forEach(([key, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value;
+        payHereForm.appendChild(input);
+      });
+
+      document.body.appendChild(payHereForm);
+      payHereForm.submit();
+
+    } catch (err) {
+      console.error(err);
+      setErrorMsg(err.message || 'An error occurred during checkout.');
+      setProcessing(false);
+    }
   };
 
   return (
@@ -58,6 +147,13 @@ export default function Checkout() {
                 <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <CreditCard size={20} color="#6366f1" /> Billing Details
                 </h3>
+
+                {errorMsg && (
+                  <div style={{ background: 'rgba(251,113,133,0.12)', border: '1px solid rgba(251,113,133,0.3)', color: '#fb7185', padding: '1rem', borderRadius: 8, marginBottom: '1rem', fontSize: '0.9rem' }}>
+                    {errorMsg}
+                  </div>
+                )}
+
                 <form onSubmit={handleSubmit}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                     <div className="form-group">
@@ -74,8 +170,8 @@ export default function Checkout() {
                     <input id="email" name="email" type="email" className="form-control" value={form.email} onChange={handleChange} required />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="phone">Phone</label>
-                    <input id="phone" name="phone" type="tel" className="form-control" value={form.phone} onChange={handleChange} />
+                    <label htmlFor="phone">Phone *</label>
+                    <input id="phone" name="phone" type="tel" className="form-control" value={form.phone} onChange={handleChange} required />
                   </div>
                   <div className="form-group">
                     <label htmlFor="address">Address *</label>
@@ -91,14 +187,35 @@ export default function Checkout() {
                       <input id="zip" name="zip" className="form-control" value={form.zip} onChange={handleChange} />
                     </div>
                   </div>
-                  <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '0.9rem', fontSize: '1rem' }} disabled={processing}>
+
+                  <div className="form-group" style={{ marginTop: '1rem' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', userSelect: 'none' }}>
+                      <input
+                        type="checkbox"
+                        checked={createAccount}
+                        onChange={(e) => setCreateAccount(e.target.checked)}
+                        style={{ width: 16, height: 16, cursor: 'pointer' }}
+                      />
+                      Create an account for later
+                    </label>
+                  </div>
+
+                  {createAccount && (
+                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} className="form-group" style={{ overflow: 'hidden' }}>
+                      <label htmlFor="password">Password *</label>
+                      <input id="password" name="password" type="password" className="form-control" value={form.password} onChange={handleChange} required={createAccount} placeholder="Choose a secure password" />
+                      <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.4rem' }}>You can use this password to log in and manage your plan later.</div>
+                    </motion.div>
+                  )}
+
+                  <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '0.9rem', fontSize: '1rem', marginTop: '1rem' }} disabled={processing}>
                     {processing ? (
                       <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <div style={{ width: 18, height: 18, border: '2px solid rgba(255,255,255,0.3)', borderTop: '2px solid #fff', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
                         Processing...
                       </span>
                     ) : (
-                      <><Lock size={16} /> Pay ${price} / {billing}</>
+                      <><Lock size={16} /> Pay LKR {price} / {billing}</>
                     )}
                   </button>
                   <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
@@ -123,22 +240,22 @@ export default function Checkout() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
                     <span style={{ color: '#94a3b8' }}>{plan} Plan</span>
-                    <span style={{ color: '#f1f5f9', fontWeight: 600 }}>${price}</span>
+                    <span style={{ color: '#f1f5f9', fontWeight: 600 }}>LKR {price}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
                     <span style={{ color: '#94a3b8' }}>Tax</span>
-                    <span style={{ color: '#f1f5f9', fontWeight: 600 }}>$0.00</span>
+                    <span style={{ color: '#f1f5f9', fontWeight: 600 }}>LKR 0.00</span>
                   </div>
                   <div className="divider" />
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.1rem' }}>
                     <span style={{ fontWeight: 700, color: '#f1f5f9' }}>Total</span>
-                    <span style={{ fontWeight: 800, fontFamily: 'Sora,sans-serif' }} className="gradient-text">${price}</span>
+                    <span style={{ fontWeight: 800, fontFamily: 'Sora,sans-serif' }} className="gradient-text">LKR {price}</span>
                   </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', opacity: 0.7 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: '#64748b' }}>
                     <span style={{ color: '#2dd4bf' }}><ShieldCheck size={14} /></span>
-                    SSL Encrypted Payment
+                    Secured by PayHere
                   </div>
                 </div>
               </div>

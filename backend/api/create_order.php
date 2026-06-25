@@ -37,8 +37,8 @@ if (empty($name) || empty($email) || empty($address) || empty($city) || empty($c
 $order_id = 'LUM-' . strtoupper(substr(md5(uniqid(rand(), true)), 0, 8));
 
 // Calculate PayHere Sandbox MD5 Hash
-$merchant_id = '1211111'; // Sandbox merchant ID
-$merchant_secret = '8MTAyMTExMTE4MTAyMTExMTg0MTAyMTExMTg='; // Sandbox merchant secret
+$merchant_id = '1236501'; // Sandbox merchant ID
+$merchant_secret = trim('NDA2OTExNDA3NzI5NzU5NjA0MTUzMzA5Mjk5MTY2MTk0MzY2NTY1Ng=='); // Sandbox merchant secret for localhost
 $amount_formatted = number_format($amount, 2, '.', ''); // format to 2 decimal places
 
 // Hash formula: UPPERCASE(MD5(merchant_id + order_id + amount + currency + UPPERCASE(MD5(merchant_secret))))

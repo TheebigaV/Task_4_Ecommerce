@@ -1,7 +1,7 @@
-﻿<?php
+<?php
 require __DIR__.'/../config/db.php';
 header('Content-Type: application/json');
- = ->query('SELECT * FROM services');
- = ->fetchAll();
-echo json_encode();
+$stmt = $pdo->query('SELECT * FROM services');
+$services = $stmt->fetchAll();
+echo json_encode($services);
 ?>

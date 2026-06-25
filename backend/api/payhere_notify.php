@@ -12,7 +12,7 @@ $payhere_currency    = $_POST['payhere_currency'] ?? '';
 $status_code         = $_POST['status_code'] ?? '';
 $md5sig              = $_POST['md5sig'] ?? '';
 
-$merchant_secret = '8MTAyMTExMTE4MTAyMTExMTg0MTAyMTExMTg='; // Sandbox merchant secret
+$merchant_secret = 'NDA2OTExNDA3NzI5NzU5NjA0MTUzMzA5Mjk5MTY2MTk0MzY2NTY1Ng=='; // Sandbox merchant secret for localhost
 
 // Calculate signature verification
 $merchant_secret_md5_upper = strtoupper(md5($merchant_secret));
