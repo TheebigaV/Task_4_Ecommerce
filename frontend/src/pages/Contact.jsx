@@ -59,9 +59,9 @@ export default function Contact() {
   return (
     <div id="contact">
       {/* Hero */}
-      <section className="section" style={{ padding: '3rem 0', background: 'var(--gradient-hero)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      <section className="section contact-hero" style={{ padding: '3rem 0', background: 'var(--gradient-hero)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div className="glow-blob" style={{ width: 400, height: 400, background: 'rgba(99,102,241,0.12)', top: '-80px', right: '-80px' }} />
-        <div className="container" style={{ position: 'relative', zIndex: 1, maxWidth: 600 }}>
+        <div className="container contact-hero-container" style={{ position: 'relative', zIndex: 1 }}>
           <AnimatedSection delay={0.1}>
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.2rem' }}>
               <div style={{ position: 'relative', width: 80, height: 80 }}>
@@ -101,10 +101,10 @@ export default function Contact() {
               </div>
             </div>
             <div className="section-label">Contact Us</div>
-            <h1 style={{ margin: '0.5rem auto', maxWidth: 600 }}>
+            <h1 className="contact-hero-title">
               Let's Start a <span className="gradient-text">Conversation</span>
             </h1>
-            <p style={{ maxWidth: 520, margin: '0 auto', fontSize: '1.1rem' }}>
+            <p className="contact-hero-sub">
               Have a project in mind? We'd love to hear from you. Send us a message and we'll respond promptly.
             </p>
           </AnimatedSection>
@@ -114,7 +114,7 @@ export default function Contact() {
       {/* Form + Info */}
       <section className="section" style={{ background: 'var(--color-bg-2)' }}>
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '3rem', maxWidth: 1000, margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', maxWidth: 1000, margin: '0 auto' }}>
             {/* Form */}
             <AnimatedSection direction="left">
               <div className="glass-card" style={{ padding: '2.5rem' }}>

@@ -472,15 +472,15 @@ export default function Home() {
       />
 
       {/* ── Hero ── */}
-      <section id="home" className="section" style={{ minHeight: '90vh', display: 'flex', alignItems: 'center', background: 'var(--gradient-hero)', position: 'relative', overflow: 'hidden' }}>
+      <section id="home" className="section home-hero" style={{ minHeight: '90vh', display: 'flex', alignItems: 'center', background: 'var(--gradient-hero)', position: 'relative', overflow: 'hidden' }}>
         <div className="glow-blob" style={{ width: 600, height: 600, background: 'rgba(99,102,241,0.15)', top: '-10%', left: '-10%' }} />
         <div className="glow-blob" style={{ width: 500, height: 500, background: 'rgba(167,139,250,0.1)', bottom: '0', right: '-10%' }} />
 
-        <div className="container" style={{ position: 'relative', zIndex: 10 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3rem', alignItems: 'center' }}>
+        <div className="container home-hero-container" style={{ position: 'relative', zIndex: 10 }}>
+          <div className="home-hero-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '2.5rem', alignItems: 'center' }}>
 
             {/* Text Content (Left) */}
-            <div style={{ textAlign: 'left' }}>
+            <div className="home-hero-text" style={{ textAlign: 'left' }}>
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -491,20 +491,20 @@ export default function Home() {
                 <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#a78bfa' }}>Next-Gen Digital Solutions</span>
               </motion.div>
 
-              <motion.h1
+              <motion.h1 className="home-hero-title"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', lineHeight: 1.1, marginBottom: '1.5rem', letterSpacing: '-0.02em' }}
+                style={{ lineHeight: 1.1, marginBottom: '1.5rem', letterSpacing: '-0.02em' }}
               >
                 Power Your Business with <span className="gradient-text">Simple</span>
               </motion.h1>
 
-              <motion.p
+              <motion.p className="home-hero-sub"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                style={{ fontSize: '1.15rem', color: '#94a3b8', marginBottom: '2.5rem', lineHeight: 1.7, maxWidth: 540 }}
+                style={{ color: '#94a3b8', marginBottom: '2.5rem', lineHeight: 1.7 }}
               >
                 From professional marketing websites to seamless e-commerce flows — we deliver high-conversion, pixel-perfect digital experiences.
               </motion.p>
@@ -515,14 +515,14 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.35 }}
                 style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}
               >
-                <a href="#pricing" className="btn btn-primary" style={{ fontSize: '1rem', padding: '0.9rem 2rem' }}>
+                <a href="#pricing" className="btn btn-primary hero-cta" style={{ fontSize: '1rem', padding: '0.9rem 2rem' }}>
                   Get Started <ArrowRight size={18} />
                 </a>
               </motion.div>
             </div>
 
             {/* Image Content (Right) */}
-            <motion.div
+            <motion.div className="home-hero-media"
               initial={{ opacity: 0, scale: 0.9, rotateY: 15 }}
               animate={{ opacity: 1, scale: 1, rotateY: 0 }}
               transition={{ duration: 0.9, delay: 0.3 }}
